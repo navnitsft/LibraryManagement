@@ -1,0 +1,71 @@
+﻿@model IEnumerable<LibraryManagement.Models.Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h3>Book List</h3>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Book</a>
+</p>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>
+                Sr. No.
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ISBN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PublishedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAvailable)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr id="bookRow-@item.BookId">
+            <td>
+                @Html.DisplayFor(modelItem => item.BookId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ISBN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishedDate)
+            </td>
+            <td>
+                @Html.Raw(item.IsAvailable
+                                ? "<span class=\"badge bg-success\">Available</span>"
+                                : "<span class=\"badge bg-danger\">Borrowed</span>")
+                @* @Html.DisplayFor(modelItem => item.IsAvailable) *@
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.BookId }, new { @class = "btn btn-info btn-sm" }) |
+                @Html.ActionLink("Edit", "Edit", new { id = item.BookId }, new { @class = "btn btn-warning btn-sm" }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.BookId }, new { @class = "btn btn-danger btn-sm" }) |
+                @Html.ActionLink("Borrow", "Borrow", new { id = item.BookId }, new { @class = "btn btn-success btn-sm" })
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>
