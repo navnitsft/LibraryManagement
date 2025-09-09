@@ -84,5 +84,89 @@ namespace LibraryManagement.Controllers
             
             return View(book);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                TempData["ErrorMessage"] = "Book ID was not provided for editing.";
+                return View("NotFound");
+            }
+
+            try
+            {
+                var book = await _libraryContext.Books.FirstOrDefaultAsync(b => b.BookId == id);
+                if (book == null)
+                {
+                    TempData["ErrorMessage"] = $"No book found with ID {id} for editing.";
+                    return View("NotFound");
+                }
+                return View(book);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while loading the book for editing.";
+                return View("Error");
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int? id, Book book)
+        {
+            if (id == null || id == 0)
+            {
+                TempData["ErrorMessage"] = "Book ID was not provided for updating.";
+                return View("NotFound");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingBook = await _libraryContext.Books.FirstOrDefaultAsync(b => b.BookId == id);
+
+                    if (existingBook == null)
+                    {
+                        TempData["ErrorMessage"] = $"No book found with ID {id} for updating.";
+                        return View("NotFound");
+                    }
+
+                    existingBook.Title = book.Title;
+                    existingBook.Author = book.Author;
+                    existingBook.ISBN = book.ISBN;
+                    existingBook.PublishedDate = book.PublishedDate;
+
+                    await _libraryContext.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"Successfully updated the book: {book.Title}.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    if (!BookExists(book.BookId))
+                    {
+                        TempData["ErrorMessage"] = $"No book found with ID {book.BookId} during concurrency check.";
+                        return View("NotFound");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "A concurrency error occurred during the update.";
+                        return View("Error");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while updating the book.";
+                    return View("Error");
+                }
+            }
+            return View(book);
+        }
+
+        private bool BookExists(int id)
+        {
+            return _libraryContext.Books.Any(e => e.BookId == id);
+        }
     }
 }
