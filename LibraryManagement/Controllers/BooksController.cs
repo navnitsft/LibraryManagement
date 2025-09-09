@@ -53,5 +53,36 @@ namespace LibraryManagement.Controllers
             }
             
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Book book)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _libraryContext.Books.AddAsync(book);
+                    await _libraryContext.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = $"Successfully added the book: {book.Title}.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while adding the book.";
+                    return View(book);
+                }
+            }
+            
+            return View(book);
+        }
     }
 }
