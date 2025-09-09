@@ -164,6 +164,59 @@ namespace LibraryManagement.Controllers
             return View(book);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                TempData["ErrorMessage"] = "Book ID was not provided for deletion.";
+                return View("NotFound");
+            }
+
+            try
+            {
+                var book = await _libraryContext.Books.FirstOrDefaultAsync(b => b.BookId == id);
+                if (book == null)
+                {
+                    TempData["ErrorMessage"] = $"No book found with ID {id} for deletion.";
+                    return View("NotFound");
+                }
+                return View(book);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while loading the book for deletion.";
+                return View("Error");
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var book = await _libraryContext.Books.FindAsync(id);
+                if (book == null)
+                {
+                    TempData["ErrorMessage"] = $"No book found with ID {id} for deletion.";
+                    return View("NotFound");
+                }
+
+                _libraryContext.Books.Remove(book);
+                await _libraryContext.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = $"Successfully deleted the book: {book.Title}.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while deleting the book.";
+                return View("Error");
+            }
+        }
+
+
         private bool BookExists(int id)
         {
             return _libraryContext.Books.Any(e => e.BookId == id);
