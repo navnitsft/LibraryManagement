@@ -17,7 +17,7 @@ namespace LibraryManagement.Controllers
         {
             try
             {
-                var books = await _libraryContext.Books.ToListAsync();
+                var books = await _libraryContext.Books.Include(b => b.BorrowRecords).AsNoTracking().ToListAsync();
                 return View(books);
             }
             catch (Exception ex)
@@ -215,7 +215,6 @@ namespace LibraryManagement.Controllers
                 return View("Error");
             }
         }
-
 
         private bool BookExists(int id)
         {

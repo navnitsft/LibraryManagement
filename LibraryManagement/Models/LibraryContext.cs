@@ -11,10 +11,11 @@ namespace LibraryManagement.Models
     {
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<Book> Books { get; set; }
+        public DbSet<BorrowRecord> BorrowRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,8 +56,7 @@ namespace LibraryManagement.Models
                     PublishedDate = new DateTime(1813, 1, 28),
                     IsAvailable = true
                 }
-
-                );
+            );
         }
     }
 }

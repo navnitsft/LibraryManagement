@@ -63,9 +63,25 @@
                 @Html.ActionLink("Details", "Details", new { id = item.BookId }, new { @class = "btn btn-info btn-sm" }) |
                 @Html.ActionLink("Edit", "Edit", new { id = item.BookId }, new { @class = "btn btn-warning btn-sm" }) |
                 @Html.ActionLink("Delete", "Delete", new { id = item.BookId }, new { @class = "btn btn-danger btn-sm" }) |
-                @Html.ActionLink("Borrow", "Borrow", new { id = item.BookId }, new { @class = "btn btn-success btn-sm" })
-            </td>
-        </tr>
-                }
+                @* @Html.ActionLink("Borrow", "Borrow", new { id = item.BookId }, new { @class = "btn btn-success btn-sm" }) *@
+                @if (item.IsAvailable)
+                    {
+                        <a asp-controller="Borrow" asp-action="Create" asp-route-bookId="@item.BookId" class="btn btn-primary btn-sm">Borrow</a>
+                    }
+                    else
+                    {
+                        var activeBorrowRecord = item.BorrowRecords?.FirstOrDefault(br => br.ReturnDate == null);
+                        if (activeBorrowRecord != null)
+                        {
+                            <a asp-controller="Borrow" asp-action="Return" asp-route-borrowRecordId="@activeBorrowRecord.BorrowRecordId" class="btn btn-success btn-sm">Return</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No active borrow record</span>
+                        }
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

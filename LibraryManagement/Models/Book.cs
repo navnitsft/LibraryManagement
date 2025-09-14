@@ -34,6 +34,8 @@ namespace LibraryManagement.Models
         [Display(Name = "Available")]
         public bool IsAvailable { get; set; }
 
+        public ICollection<BorrowRecord> BorrowRecords { get; set; }
+
         // BookId and IsAvailable are marked with [BindNever] to prevent them from being set via form submissions.
     }
 }
